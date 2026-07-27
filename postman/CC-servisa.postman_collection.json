@@ -1,6 +1,6 @@
 {
   "info": {
-    "_postman_id": "a758f4bc-33ca-4675-b077-d056c1b28485",
+    "_postman_id": "1dc800f6-d725-46fa-a0c6-cccbc48c0658",
     "name": "CC servisa – osoby a rejstříky",
     "description": "# CC servisa (credit-check-api)\n\nTestovací osoby z Confluence\n[Osoby pro testing CC](https://livendo.atlassian.net/wiki/spaces/QA1/pages/1599176706/Osoby+pro+testing+CC).\nKaždá osoba spouští **kompletní sadu rejstříků své země** — CZ osoba všech 5 CZ,\nSK osoba všech 8 SK, UA osoba všechny 3 UA.\n\nNavazuje na kolekci **Credit Check staging** — používá stejné proměnné\n(`cc-php-service-url`, `token_cc_service`, `url_ud_be`, `url_ud_be_api`,\n`bearer_token`, `email`, `password`), takže funguje s existujícím environmentem.\n\n## Přepínání URL\n\nBase URL CC servisy se bere z `cc-php-service-url`. Přepnutí na feature staging\nkonkrétního PR se dělá **jednou proměnnou**:\n\n| proměnná | hodnota | výsledek |\n|---|---|---|\n| `cc_pr` | `68` | `https://php-credit-check-app-68.k8stage.ulovdomov.cz` |\n| `cc_url_override` | libovolná URL | použije se přesně ta |\n| obojí prázdné | — | `cc-php-service-url` z environmentu |\n\nPro [PR #68](https://github.com/ulovdomov/credit-check-api/pull/68) tedy stačí\nnastavit `cc_pr = 68`, nebo vybrat environment **CC – PR (feature staging)**.\n\n## Endpointy\n\n| metoda | cesta | popis |\n|---|---|---|\n| `POST` | `/v1/cc/create` | spustí prověření, vrátí `data.ccId` |\n| `GET` | `/v1/cc/result/{id}` | průběžný i finální výsledek |\n| `GET` | `/v1/cc/report/{parentCcId}` | report nad parent CC |\n| `GET` | `/v1/doc/` | OpenAPI dokumentace |\n\nVše pod Bearer `{{token_cc_service}}`.\n\n## Poznámky\n\n- `executionRegisterCz` / `executionRegisterSk` jsou placené (Cribis) a **mimo\n  produkci vracejí MOCK data** — první záznam končí `[MOCK]`. Testy je proto\n  neověřují tvrdě, jen logují do konzole.\n- Bez `scrapersList` se spustí všechny rejstříky **kromě** těch dvou placených.\n- `POST /v1/cc/create` vrací `{\"error\": null, \"ccRunId\": 5338}` — tedy jiný tvar\n  než `GET /v1/cc/result/{id}`, který vrací `{\"success\": true, \"data\": {...}}`.\n  `CREATE` testy proto čtou `ccRunId`, `RESULT` testy `data`.",
     "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
@@ -988,7 +988,7 @@
                     "create"
                   ]
                 },
-                "description": "**Pavel Kaňák**, nar. 1992-12-21 — spouští **všechny CZ rejstříky** (5 ks).\n\n### Očekávaný nález (wiki *Osoby pro testing CC*)\n- ✅ `insolvencyRegisterCz` — Insolvenční rejstřík [CZ] – isir.justice.cz\n- ✅ `businessRegisterCz` — Registr živnostenského podnikání [CZ] – rzp.cz\n- ✅ `executionRegisterCz` — Centrální evidence exekucí [CZ] – Cribis (placené, mimo produkci MOCK)\n\n### Očekáváno bez záznamu\n- ⬜ `tradeRegisterCz` — Obchodní rejstřík [CZ] – or.justice.cz\n- ⬜ `policeRegisterCz` — Osoby hledané Policií ČR [CZ]\n\nUloží `ccId` do `{{parentCcId}}` i do `{{cz04_kanak_ccId}}`.",
+                "description": "**Pavel Kaňák**, nar. 1992-12-21 — spouští **všechny CZ rejstříky** (5 ks).\n\n### Očekávaný nález (wiki *Osoby pro testing CC*)\n- ✅ `insolvencyRegisterCz` — Insolvenční rejstřík [CZ] – isir.justice.cz\n- ✅ `businessRegisterCz` — Registr živnostenského podnikání [CZ] – rzp.cz\n- ✅ `executionRegisterCz` — Centrální evidence exekucí [CZ] – Cribis (placené, mimo produkci MOCK)\n- ✅ `tradeRegisterCz` — Obchodní rejstřík [CZ] – or.justice.cz\n\n### Očekáváno bez záznamu\n- ⬜ `policeRegisterCz` — Osoby hledané Policií ČR [CZ]\n\nUloží `ccId` do `{{parentCcId}}` i do `{{cz04_kanak_ccId}}`.",
                 "body": {
                   "mode": "raw",
                   "raw": "{\n    \"firstName\": \"Pavel\",\n    \"lastName\": \"Kaňák\",\n    \"birthDate\": \"1992-12-21\",\n    \"scrapersList\": [\n        \"businessRegisterCz\",\n        \"tradeRegisterCz\",\n        \"insolvencyRegisterCz\",\n        \"policeRegisterCz\",\n        \"executionRegisterCz\"\n    ]\n}",
@@ -1085,7 +1085,7 @@
                   "script": {
                     "exec": [
                       "const EXPECTED_SCRAPERS = [\"businessRegisterCz\", \"tradeRegisterCz\", \"insolvencyRegisterCz\", \"policeRegisterCz\", \"executionRegisterCz\"];   // co jsme poslali v scrapersList",
-                      "const EXPECTED_HITS     = [\"insolvencyRegisterCz\", \"businessRegisterCz\"];       // registry, kde wiki očekává záznam",
+                      "const EXPECTED_HITS     = [\"insolvencyRegisterCz\", \"businessRegisterCz\", \"tradeRegisterCz\"];       // registry, kde wiki očekává záznam",
                       "const SOFT_HITS         = [\"executionRegisterCz\"];       // placené registry – mimo produkci MOCK",
                       "",
                       "pm.test(\"Status code is 200\", function () {",
@@ -3100,7 +3100,7 @@
                     "create"
                   ]
                 },
-                "description": "**Ladislav Molnár**, nar. 2000-01-01 — spouští **všechny SK rejstříky** (8 ks).\n\n### Očekávaný nález (wiki *Osoby pro testing CC*)\n- ✅ `unionRegisterSk` — Union ZP [SK] – unionzp.sk\n- ✅ `healthInsuranceRegisterSk` — Dôvera ZP [SK] – dovera.sk\n\n### Očekáváno bez záznamu\n- ⬜ `tradeRegisterSk` — Obchodný register [SK] – orsr.sk\n- ⬜ `insolvencyRegisterSk` — Register úpadcov [SK] – ru.justice.sk\n- ⬜ `policeRegisterSk` — Osoby hľadané Políciou SR [SK] – minv.sk\n- ⬜ `financialRegisterSk` — Finančná správa [SK] – financnasprava.sk\n- ⬜ `vzpRegisterSk` — Všeobecná ZP [SK] – vszp.sk\n- ⬜ `executionRegisterSk` — Slovenská komora exekútorov [SK] – Cribis (placené, mimo produkci MOCK)\n\nUloží `ccId` do `{{parentCcId}}` i do `{{sk04_molnar_ccId}}`.",
+                "description": "**Ladislav Molnár**, nar. 2000-01-01 — spouští **všechny SK rejstříky** (8 ks).\n\n### Očekávaný nález (wiki *Osoby pro testing CC*)\n- ✅ `tradeRegisterSk` — Obchodný register [SK] – orsr.sk\n- ✅ `financialRegisterSk` — Finančná správa [SK] – financnasprava.sk\n- ✅ `vzpRegisterSk` — Všeobecná ZP [SK] – vszp.sk\n- ✅ `unionRegisterSk` — Union ZP [SK] – unionzp.sk\n- ✅ `healthInsuranceRegisterSk` — Dôvera ZP [SK] – dovera.sk\n\n### Očekáváno bez záznamu\n- ⬜ `insolvencyRegisterSk` — Register úpadcov [SK] – ru.justice.sk\n- ⬜ `policeRegisterSk` — Osoby hľadané Políciou SR [SK] – minv.sk\n- ⬜ `executionRegisterSk` — Slovenská komora exekútorov [SK] – Cribis (placené, mimo produkci MOCK)\n\nUloží `ccId` do `{{parentCcId}}` i do `{{sk04_molnar_ccId}}`.",
                 "body": {
                   "mode": "raw",
                   "raw": "{\n    \"firstName\": \"Ladislav\",\n    \"lastName\": \"Molnár\",\n    \"birthDate\": \"2000-01-01\",\n    \"scrapersList\": [\n        \"tradeRegisterSk\",\n        \"insolvencyRegisterSk\",\n        \"policeRegisterSk\",\n        \"financialRegisterSk\",\n        \"healthInsuranceRegisterSk\",\n        \"unionRegisterSk\",\n        \"vzpRegisterSk\",\n        \"executionRegisterSk\"\n    ]\n}",
@@ -3197,7 +3197,7 @@
                   "script": {
                     "exec": [
                       "const EXPECTED_SCRAPERS = [\"tradeRegisterSk\", \"insolvencyRegisterSk\", \"policeRegisterSk\", \"financialRegisterSk\", \"healthInsuranceRegisterSk\", \"unionRegisterSk\", \"vzpRegisterSk\", \"executionRegisterSk\"];   // co jsme poslali v scrapersList",
-                      "const EXPECTED_HITS     = [\"unionRegisterSk\", \"healthInsuranceRegisterSk\"];       // registry, kde wiki očekává záznam",
+                      "const EXPECTED_HITS     = [\"tradeRegisterSk\", \"financialRegisterSk\", \"vzpRegisterSk\", \"unionRegisterSk\", \"healthInsuranceRegisterSk\"];       // registry, kde wiki očekává záznam",
                       "const SOFT_HITS         = [];       // placené registry – mimo produkci MOCK",
                       "",
                       "pm.test(\"Status code is 200\", function () {",
