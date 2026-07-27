@@ -1,6 +1,6 @@
 {
   "info": {
-    "_postman_id": "6aa38a38-0ffc-4203-a6c7-2a789ecb337a",
+    "_postman_id": "a758f4bc-33ca-4675-b077-d056c1b28485",
     "name": "CC servisa – osoby a rejstříky",
     "description": "# CC servisa (credit-check-api)\n\nTestovací osoby z Confluence\n[Osoby pro testing CC](https://livendo.atlassian.net/wiki/spaces/QA1/pages/1599176706/Osoby+pro+testing+CC).\nKaždá osoba spouští **kompletní sadu rejstříků své země** — CZ osoba všech 5 CZ,\nSK osoba všech 8 SK, UA osoba všechny 3 UA.\n\nNavazuje na kolekci **Credit Check staging** — používá stejné proměnné\n(`cc-php-service-url`, `token_cc_service`, `url_ud_be`, `url_ud_be_api`,\n`bearer_token`, `email`, `password`), takže funguje s existujícím environmentem.\n\n## Přepínání URL\n\nBase URL CC servisy se bere z `cc-php-service-url`. Přepnutí na feature staging\nkonkrétního PR se dělá **jednou proměnnou**:\n\n| proměnná | hodnota | výsledek |\n|---|---|---|\n| `cc_pr` | `68` | `https://php-credit-check-app-68.k8stage.ulovdomov.cz` |\n| `cc_url_override` | libovolná URL | použije se přesně ta |\n| obojí prázdné | — | `cc-php-service-url` z environmentu |\n\nPro [PR #68](https://github.com/ulovdomov/credit-check-api/pull/68) tedy stačí\nnastavit `cc_pr = 68`, nebo vybrat environment **CC – PR (feature staging)**.\n\n## Endpointy\n\n| metoda | cesta | popis |\n|---|---|---|\n| `POST` | `/v1/cc/create` | spustí prověření, vrátí `data.ccId` |\n| `GET` | `/v1/cc/result/{id}` | průběžný i finální výsledek |\n| `GET` | `/v1/cc/report/{parentCcId}` | report nad parent CC |\n| `GET` | `/v1/doc/` | OpenAPI dokumentace |\n\nVše pod Bearer `{{token_cc_service}}`.\n\n## Poznámky\n\n- `executionRegisterCz` / `executionRegisterSk` jsou placené (Cribis) a **mimo\n  produkci vracejí MOCK data** — první záznam končí `[MOCK]`. Testy je proto\n  neověřují tvrdě, jen logují do konzole.\n- Bez `scrapersList` se spustí všechny rejstříky **kromě** těch dvou placených.\n- `POST /v1/cc/create` vrací `{\"error\": null, \"ccRunId\": 5338}` — tedy jiný tvar\n  než `GET /v1/cc/result/{id}`, který vrací `{\"success\": true, \"data\": {...}}`.\n  `CREATE` testy proto čtou `ccRunId`, `RESULT` testy `data`.",
     "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
@@ -1885,10 +1885,10 @@
           "description": ""
         },
         {
-          "name": "David Bergman (1997-10-27)",
+          "name": "Martin Abraham (1987-04-27)",
           "item": [
             {
-              "name": "CREATE – David Bergman",
+              "name": "CREATE – Martin Abraham",
               "request": {
                 "auth": {
                   "type": "bearer",
@@ -1924,10 +1924,10 @@
                     "create"
                   ]
                 },
-                "description": "**David Bergman**, nar. 1997-10-27 — spouští **všechny CZ rejstříky** (5 ks).\n\n### Očekávaný nález (wiki *Osoby pro testing CC*)\n- ✅ `policeRegisterCz` — Osoby hledané Policií ČR [CZ]\n\n### Očekáváno bez záznamu\n- ⬜ `businessRegisterCz` — Registr živnostenského podnikání [CZ] – rzp.cz\n- ⬜ `tradeRegisterCz` — Obchodní rejstřík [CZ] – or.justice.cz\n- ⬜ `insolvencyRegisterCz` — Insolvenční rejstřík [CZ] – isir.justice.cz\n- ⬜ `executionRegisterCz` — Centrální evidence exekucí [CZ] – Cribis (placené, mimo produkci MOCK)\n\nUloží `ccId` do `{{parentCcId}}` i do `{{cz08_bergman_ccId}}`.",
+                "description": "**Martin Abraham**, nar. 1987-04-27 — spouští **všechny CZ rejstříky** (5 ks).\n\n### Očekávaný nález (wiki *Osoby pro testing CC*)\n- ✅ `policeRegisterCz` — Osoby hledané Policií ČR [CZ]\n\n### Očekáváno bez záznamu\n- ⬜ `businessRegisterCz` — Registr živnostenského podnikání [CZ] – rzp.cz\n- ⬜ `tradeRegisterCz` — Obchodní rejstřík [CZ] – or.justice.cz\n- ⬜ `insolvencyRegisterCz` — Insolvenční rejstřík [CZ] – isir.justice.cz\n- ⬜ `executionRegisterCz` — Centrální evidence exekucí [CZ] – Cribis (placené, mimo produkci MOCK)\n\nUloží `ccId` do `{{parentCcId}}` i do `{{cz08_abraham_ccId}}`.",
                 "body": {
                   "mode": "raw",
-                  "raw": "{\n    \"firstName\": \"David\",\n    \"lastName\": \"Bergman\",\n    \"birthDate\": \"1997-10-27\",\n    \"scrapersList\": [\n        \"businessRegisterCz\",\n        \"tradeRegisterCz\",\n        \"insolvencyRegisterCz\",\n        \"policeRegisterCz\",\n        \"executionRegisterCz\"\n    ]\n}",
+                  "raw": "{\n    \"firstName\": \"Martin\",\n    \"lastName\": \"Abraham\",\n    \"birthDate\": \"1987-04-27\",\n    \"scrapersList\": [\n        \"businessRegisterCz\",\n        \"tradeRegisterCz\",\n        \"insolvencyRegisterCz\",\n        \"policeRegisterCz\",\n        \"executionRegisterCz\"\n    ]\n}",
                   "options": {
                     "raw": {
                       "language": "json"
@@ -1971,8 +1971,8 @@
                       "});",
                       "",
                       "pm.environment.set(\"parentCcId\", ccRunId);",
-                      "pm.environment.set(\"cz08_bergman_ccId\", ccRunId);",
-                      "console.log(\"David Bergman -> ccRunId \" + ccRunId);"
+                      "pm.environment.set(\"cz08_abraham_ccId\", ccRunId);",
+                      "console.log(\"Martin Abraham -> ccRunId \" + ccRunId);"
                     ],
                     "type": "text/javascript"
                   }
@@ -1980,7 +1980,7 @@
               ]
             },
             {
-              "name": "RESULT – David Bergman",
+              "name": "RESULT – Martin Abraham",
               "request": {
                 "auth": {
                   "type": "bearer",
@@ -2001,7 +2001,7 @@
                   }
                 ],
                 "url": {
-                  "raw": "{{cc-php-service-url}}/v1/cc/result/{{cz08_bergman_ccId}}",
+                  "raw": "{{cc-php-service-url}}/v1/cc/result/{{cz08_abraham_ccId}}",
                   "host": [
                     "{{cc-php-service-url}}"
                   ],
@@ -2009,10 +2009,10 @@
                     "v1",
                     "cc",
                     "result",
-                    "{{cz08_bergman_ccId}}"
+                    "{{cz08_abraham_ccId}}"
                   ]
                 },
-                "description": "Výsledek pro **David Bergman**.\n\nScrapery běží asynchronně — v **Collection Runneru** se request sám opakuje, dokud nejsou všechny registry `done` (max `{{pollMaxTries}}`, vypnutí přes `pollEnabled = false`). Nastav v Runneru *Delay* cca **2000 ms**."
+                "description": "Výsledek pro **Martin Abraham**.\n\nScrapery běží asynchronně — v **Collection Runneru** se request sám opakuje, dokud nejsou všechny registry `done` (max `{{pollMaxTries}}`, vypnutí přes `pollEnabled = false`). Nastav v Runneru *Delay* cca **2000 ms**."
               },
               "response": [],
               "event": [
