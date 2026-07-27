@@ -112,9 +112,10 @@ request pustit znovu.
 * Bez `scrapersList` se spustí všechny rejstříky **kromě** těch dvou placených.
 * `patronym` je povinný jen u UA a **nejde doplnit dodatečně** přes `parentCcId`
   (známý problém, je na to negativní request).
-* V původní kolekci bylo `pm.environment.set("parentCcId", jsonData.ccRunId)` —
-  `ccRunId` na odpovědi neexistuje, ukládalo se `undefined`. Tady je správně
-  `jsonData.data.ccId`.
+* **Dva různé tvary odpovědi.** `POST /v1/cc/create` vrací
+  `{"error": null, "ccRunId": 5338}`, kdežto `GET /v1/cc/result/{id}` vrací
+  `{"success": true, "data": {...}}`. `CREATE` testy proto čtou `ccRunId`
+  (s fallbackem na `data.ccId`), `RESULT` testy `data`.
 * Tokeny a hesla jsou v environmentech **prázdné** — doplň si je ručně,
   v repozitáři žádné nejsou.
 
