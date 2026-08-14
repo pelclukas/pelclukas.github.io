@@ -18,6 +18,8 @@
 const fs = require('fs');
 const path = require('path');
 
+require('./env').loadDotEnv();
+
 const devices = require('./devices');
 const H = require('./helpers');
 const { runCore, runDeep, runLandscape } = require('./scenarios');

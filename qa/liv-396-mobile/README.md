@@ -23,7 +23,16 @@ právě editované pole" potřebuje WebDriver session, kterou drží skript. Pro
 
 ## Proměnné prostředí
 
-V repu není žádná z nich - repozitář je veřejný.
+V repu není žádná z nich - repozitář je veřejný. Nejjednodušší je zkopírovat
+šablonu a vyplnit ji:
+
+```bash
+cp .env.example .env
+```
+
+`.env` je v `.gitignore`. Runner ho načte sám, žádná závislost na `dotenv`.
+Proměnná už nastavená v shellu má přednost před souborem, takže jednorázový
+`DEVICES=... node run.js` funguje i s vyplněným `.env`.
 
 | Proměnná | Povinná | Popis |
 | --- | --- | --- |

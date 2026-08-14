@@ -7,7 +7,11 @@
  *   node preflight.js
  */
 
+const { loadDotEnv } = require('./env');
 const devices = require('./devices');
+
+const dotenv = loadDotEnv();
+if (dotenv.loaded) console.log(`.env nacten: ${dotenv.keys.length} promennych${dotenv.skipped.length ? `, ${dotenv.skipped.length} prebito shellem` : ''}\n`);
 
 const BS_USER = process.env.BROWSERSTACK_USERNAME;
 const BS_KEY = process.env.BROWSERSTACK_ACCESS_KEY;
