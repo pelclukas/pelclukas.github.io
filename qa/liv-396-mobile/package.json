@@ -1,0 +1,14 @@
+{
+  "name": "liv-396-mobile-browserstack",
+  "version": "1.0.0",
+  "private": true,
+  "description": "Real device runner pro LIV-396 (mobile view credit check) na BrowserStack Automate",
+  "type": "commonjs",
+  "scripts": {
+    "preflight": "node preflight.js",
+    "test": "node run.js"
+  },
+  "dependencies": {
+    "selenium-webdriver": "^4.28.1"
+  }
+}
